@@ -6,8 +6,8 @@ public class FoodTruck {
 	  private String foodType;
 	  private int truckRating;
 	  
-	  public FoodTruck(String name, String foodType, int truckRating) {
-//	    TODO this.foodTruckId = foodTruckId; generate FoodTruckId here
+	  public FoodTruck(String name, String foodType, int truckRating, int truckId) {
+	    this.foodTruckId = truckId; 
 	    this.name = name;
 	    this.foodType = foodType;
 	    this.truckRating = truckRating;
