@@ -16,64 +16,73 @@ public class FoodTruckApp {
 		FoodTruckApp app = new FoodTruckApp();
 
 		Scanner kb = new Scanner(System.in);
+		app.welcomeMenu(kb);
+	}
+
+	private void welcomeMenu(Scanner scanner) {
 
 		boolean exit = false;
-		boolean keepGoing = true;
-		boolean trucksArePresent = true;
-		;
-		app.welcomeMenu(kb);
-		while (!exit) {
-		if (trucksArePresent) {
-			app.viewTruckList(kb);
-		} else {
-			inputTruck();
-		}
 
-		if (app.numTrucks() == 0) {
-			app.inputTruck(kb);
-		} else if (app.numTrucks() > 5) {
-			exit = true;
-		} else if (app.numTrucks() < 5 && keepGoing) {
-			app.inputTruck(kb);
-		} else {
-			app.truckInputMenu(kb);
-
-		}
-	}
-
-
-	app.viewTruckList(kb);app.viewAverageRating(kb);app.viewHighestRating(kb);
-
-	}
-
-	public void welcomeMenu(Scanner scanner) {
 		System.out.println("Welcome to **Denver's Delicious Dinners** ");
 		System.out.println("Where you can keep track of all the great Food Trucks Denver has to offer! ");
+		while (!exit) {
+			if (numTrucks()) {
+				System.out.println("You have " + trucks + " locations in your Food Truck App.");
+				exit = truckInputMenu(scanner);
+			
+			} else {
+				System.out.println("No Food Trucks entered, so we are taking you to the input menu.");
+				this.inputTruck(scanner);
+			} 
+		
+		}
+		System.out.println("Thanks for checking out Denver's Delicious Dinners, have a great day!");
+
 
 	}
 
-//		TODO give user option to see list if food trucks already exist
-
 	public void inputTruck(Scanner scanner) {
+		boolean nameAcceptable = false;
+		String name = "";
 		System.out.println("You currently have: " + numTrucks() + " Food Trucks entered so far.");
 
 		System.out.print("Enter the name of the new Food Truck: ");
-		String name = scanner.nextLine();
+		name = scanner.nextLine();
+		if (name != null && !name.equalsIgnoreCase("")) {
+			nameAcceptable = true;
+		}
+		if (name.equalsIgnoreCase("QUIT")) {
+			return;
+		}
 		System.out.println("The Food Truck you visited is called: " + name);
 
 		System.out.print("Enter the type of food you had at this Food Truck: ");
 		String typeOfFood = scanner.nextLine();
+
+		if (name.equalsIgnoreCase("QUIT")) {
+			return;
+		}
 		System.out.println("Yumm! Sounds good!");
 		System.out.print("On a scale of 0-Bad to 5-Fantastic, please enter your overall food and experience rating:");
 		int truckRating = scanner.nextInt();
+
+		if (name.equalsIgnoreCase("QUIT")) {
+			return;
+		}
+
 		this.createTruck(name, typeOfFood, truckRating);
 
-		System.out.println(" You currently have: " + numTrucks() + " Food Trucks entered.");
-		
 	}
 
 	public void createTruck(String name, String typeOfFood, int truckRating) {
-		int truckId = numTrucks() + 1;
+		int truckId = 0;
+		for ( int i = 0; i < this.trucks.length; i++) {
+			if (this.trucks[i] != null) {
+				truckId = this.trucks[i].getFoodTruckId();
+			}
+		}
+		truckId = truckId + 1;
+		
 		FoodTruck ft = new FoodTruck(name, typeOfFood, truckRating, truckId);
 		trucks[numTrucks()] = ft;
 
@@ -91,7 +100,7 @@ public class FoodTruckApp {
 
 	}
 
-	public void truckInputMenu(Scanner scanner) {
+	private boolean truckInputMenu(Scanner scanner) {
 		System.out.println("*****************************************");
 		System.out.println("********* 1.List all Food Trucks ********");
 		System.out.println("*****************************************");
@@ -101,42 +110,84 @@ public class FoodTruckApp {
 		System.out.println("*****************************************");
 		System.out.println("*************** 4. Quit *****************");
 		System.out.println("*****************************************");
-		int menuChoice = scanner.nextInt();
+		boolean validResponse = false;
+		int response = 0;
+		
+		while(!validResponse) {
+			response = scanner.nextInt();
+			if (response == 1 || response == 2 || response == 3 || response == 4) {
+				validResponse = true;
+			} else {
+				System.out.println("Please choose a menu option from the list.");
+			}
+			
+		}
 
-		switch (menuChoice) {
+		switch (response) {
 		case '1':
-			System.out.println(viewTruckList());
+			this.viewTruckList(scanner);
 			break;
 		case '2':
-			System.out.println(viewAverageRating());
+			this.viewAverageRating(scanner);
 			break;
 		case '3':
-			System.out.println(viewHighestRating());
+			this.viewHighestRating(scanner);
 			break;
 		case '4':
-			System.exit(menuChoice);
+			return true;
+			default:
+				break;
 
 		}
+		return false;
 
 	}
 
-	public void viewTruckList(Scanner scanner) {
-//			TODO this will bring back loading menu choice one
-//		TODO and then loop back to landing menu
+	private void viewTruckList(Scanner scanner) {
+		for(int i = 0; i < this.trucks.length; i++) {
+			if(this.trucks[i] != null){
+
+	int choiceNumber = i + 1;
+	FoodTruck chosenTruck = this.trucks[i];
+	
+	System.out.println(choiceNumber + "." + chosenTruck.getName() + "(ID: " + chosenTruck.getFoodTruckId() + ")" 
+	+ chosenTruck.getFoodType() + "Type Of Food: " + chosenTruck.getTruckRating() + "Rating: ");
+	}
+}
+
 	}
 
 	public void viewAverageRating(Scanner scanner) {
-//			TODO this will bring back loading menu choice two
-//		TODO and then loop back to landing menu
+		int count = 0;
+		int total = 0;
+		
+		for (int i = 0; i < this.trucks.length; i++) {
+			if (this.trucks[i] != null) {
+				count ++;
+				total += this.trucks[i].getTruckRating();
+			}
+			
+		}
+		int avg = total / count;
+		
+		System.out.println("Average rating of " + count + " trucks is " + avg);
 	}
-//	 TODO calculate average rating here??
 
 	public void viewHighestRating(Scanner scanner) {
-//			TODO this will bring back loading menu choice three
-//		TODO and then loop back to landing menu
-//			TODO we also need a quit program option
+		int count = 0;
+		int total = 0;
+		for (int i = 0; i < this.trucks.length; i++) {
+			if (this.trucks[i] != null) {
+				count ++;
+				total += trucks[i].getTruckRating();
+				
+			}
+				
+			}
+		int highest = total / trucks.length;
+		System.out.println("The highest rated Food Truck is: " + highest);
+		
 
-//		TODO calculate highest rating here??
 	}
 
 }
