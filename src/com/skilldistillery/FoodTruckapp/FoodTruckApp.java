@@ -175,16 +175,17 @@ public class FoodTruckApp {
 
 	public void viewHighestRating(Scanner scanner) {
 		int count = 0;
-		int total = 0;
-		for (int i = 0; i < this.trucks.length; i++) {
-			if (this.trucks[i] != null) {
+		int max = 0;
+		for (int i = 1; i < this.trucks.length; i++) {
+			if (trucks[i] > max) {
+				max = trucks[i];
 				count ++;
-				total += trucks[i].getTruckRating();
+				max += trucks[i].getTruckRating();
 				
 			}
 				
 			}
-		int highest = total / trucks.length;
+		int highest = Math.max(this.trucks[i].getTruckRating());
 		System.out.println("The highest rated Food Truck is: " + highest);
 		
 
